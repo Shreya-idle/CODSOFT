@@ -1,59 +1,72 @@
-from tkinter import *
+from tkinter import*
 from tkinter import messagebox
-import random
-import string
-
 root = Tk()
-root.title("Password Generator")
-root.configure()
-def generate_password(arbitrary):
-    u = string.ascii_uppercase
-    l = string.ascii_lowercase
-    d = string.digits
-    s = string.punctuation
-    s = list(u + l + d + s)
-    random.shuffle(s)
-    password = "".join(random.choices(s, k=arbitrary))
-    return password
-
-def get_password_length():
-   try:
-      length = int(enter_length.get())
-      if length <= 5:
-         messagebox.showinfo("Error", "Password length needs to be 6 or more than 6.")
-         return length
-
-      password = generate_password(length)
-      label_app_pass.insert(0, password)
-   except ValueError:
-      messagebox.showinfo("Error", "Please enter a valid integer.")
+tasks_list = []
+counter = 1
+def inputError() :
+    if enterTaskField.get() =="":
+        messagebox.showerror("input Error")
+        return 0
+    return 1
 
 
-Label__name__length = Label(root, text="Enter user name")
-Label__name__length.grid(row=0, column=0, padx=10, pady=10)
+def clear_taskNumberField():
+    clear_taskNumberField.delete(0.0, END)
 
-Label_pass_length = Label(root, text="Password Length:")
-Label_pass_length.grid(row=1, column=0, padx=10, pady=10)
-label_word_pass = Entry(root)#empy box
-label_word_pass.grid(row=0, column=1, padx=10, pady=10)
+def clear_taskField():
+    enterTaskField.delete(0, END)
 
-enter_length = Entry(root)#box containing code
-enter_length.grid(row=1, column=1, padx=10, pady=10)
+def insertTask():
+    global counter
+    value = inputError()
+    if value == 0:
+        return
+    content = enterTaskField.get() + "\n"
+    tasks_list.append(content)
 
-generate_button = Button(root, text="Generate Password", command=get_password_length)
-generate_button.grid(row=4, column=1, columnspan=2, padx=10, pady=10)
+    TextArea.insert('end -1 chars', "[ " + str(counter) +"]" + content)
+    counter+=1
+    clear_taskField()
 
-generate_button_accept = Button(root, text="Accept")
-generate_button_accept.grid(row=5, column=0, columnspan=2, padx=10, pady=10)
+def delete():
+    global counter
+    if len(tasks_list) == 0:
+        messagebox.showerror("No task")
+        return
+    number = taskNumberField.get(1.0, END)
+    if number == "\n":
+        messagebox.showerror("input error")
+        return
+    else :
+        task_no = int(number)
+    clear_taskNumberField()
+    tasks_list.pop(task_no -1)
+    counter -= 1
+    TextArea.delete(1.0, END)
+    for i in range(len(tasks_list)):
+        TextArea.insert('end -1 chars', "[" + str(i + 1)+ "]" + tasks_list[i])
 
-generate_button_reset= Button(root, text="Reset")
-generate_button_reset.grid(row=5, column=1, columnspan=2, padx=10, pady=10)
+if __name__=="__main__":
+    root.configure(background = "cyan")
+    root.title("ToDo App")
+    root.geometry("250x300")
+    enterTask = Label(root, text = "Enter Your Task", bg="cyan", fg="black")
+    enterTaskField = Entry(root)
+    Submit = Button(root, text = "Add Task", fg="white", bg="orange", command= insertTask)
+    TextArea = Text(root, height = 5, width= 25, font="lucida 13")
+    taskNumber = Label(root, text="Delete Task Number", bg= "light blue")
+    taskNumberField = Text(root, height = 1, width= 2, font="lucida 13")
+    delete = Button(root, text = "Exit", fg="white", bg="orange", command= exit)
+    Exit= Button(root, text = "Exit", fg ="white", bg="orange", command= exit)
+    enterTask.grid( row=0, column= 2)
+    enterTaskField.grid(row=1, column= 2, ipadx= 50)
 
-Label__name__length = Label(root, text="Password ")
-Label__name__length.grid(row=2, column=0, padx=10, pady=10)
-label_app_pass = Entry(root, text="Password")
-label_app_pass.grid(row=2, column=1, padx=10, pady=10)
-
-root.mainloop()
+    Submit.grid(row=2, column= 2)
+    TextArea.grid(row= 3, column= 2, padx= 10, sticky =W)
+    taskNumber.grid(row =4,column = 2, pady =5 )
+    taskNumberField.grid(row=5, column=2)
+    delete.grid(row = 6, column= 2, pady= 5)
+    Exit.grid(row = 7, column =2)
+    root.mainloop()
 
 
